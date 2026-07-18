@@ -1,0 +1,4 @@
+node_modules/
+
+# Supplier catalog PDFs — contain wholesale cost prices, keep out of the repo
+*.pdf

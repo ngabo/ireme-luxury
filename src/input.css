@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-cream font-body text-charcoal antialiased;
+  }
+
+  /* Respect users who prefer less motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .eyebrow {
+    @apply text-[0.6875rem] font-medium uppercase tracking-luxe text-gold;
+  }
+
+  .btn-primary {
+    @apply inline-flex min-h-[48px] cursor-pointer items-center justify-center gap-3 bg-charcoal px-10 py-3.5
+           text-[0.8125rem] font-medium uppercase tracking-luxe text-cream transition-colors duration-300
+           hover:bg-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold;
+  }
+
+  .btn-ghost {
+    @apply inline-flex min-h-[48px] cursor-pointer items-center justify-center border border-charcoal/25 px-10 py-3.5
+           text-[0.8125rem] font-medium uppercase tracking-luxe text-charcoal transition-colors duration-300
+           hover:border-gold hover:text-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold;
+  }
+
+  .nav-link {
+    @apply text-[0.8125rem] font-normal uppercase tracking-wide2 text-charcoal/70 transition-colors duration-200
+           hover:text-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold;
+  }
+
+  /* Dark-theme variants (homepage) */
+  .btn-gold {
+    @apply inline-flex min-h-[48px] cursor-pointer items-center justify-center gap-3 bg-gold px-9 py-3.5
+           text-[0.8125rem] font-medium uppercase tracking-luxe text-charcoal-deep transition-colors duration-300
+           hover:bg-gold-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold-light;
+  }
+
+  .btn-outline-light {
+    @apply inline-flex min-h-[48px] cursor-pointer items-center justify-center border border-cream/30 px-9 py-3.5
+           text-[0.8125rem] font-medium uppercase tracking-luxe text-cream transition-colors duration-300
+           hover:border-gold hover:text-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold;
+  }
+
+  .nav-link-dark {
+    @apply text-[0.8125rem] font-normal uppercase tracking-wide2 text-cream/70 transition-colors duration-200
+           hover:text-gold-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold;
+  }
+}
+
+/* Hero slideshow — slow JS-driven crossfade with a gentle drift.
+   The active slide fades in over 2s and slowly settles from a slight zoom. */
+.hero-slideshow {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-slideshow img {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.07) translateX(1.5%);
+  transition: opacity 2s ease-in-out, transform 9s ease-out;
+}
+
+.hero-slideshow img.is-active {
+  opacity: 1;
+  transform: scale(1) translateX(0);
+}

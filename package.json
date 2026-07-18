@@ -1,0 +1,13 @@
+{
+  "name": "ireme-luxury",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ireme Luxury — original watches & fine perfumes, Kigali",
+  "scripts": {
+    "build": "tailwindcss -i src/input.css -o css/styles.css --minify",
+    "watch": "tailwindcss -i src/input.css -o css/styles.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  }
+}
