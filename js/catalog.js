@@ -117,6 +117,18 @@
 
   // ---------- Product detail modal (watches) ----------
   const BRAND_INFO = {
+    'Hugo Boss': {
+      madeFor: 'German design house since 1924. Sharp, modern dress and sport watches — made for the professional who values understated confidence.',
+      materials: 'Stainless-steel or ion-plated case with steel, leather or mesh strap and mineral crystal.',
+    },
+    'Maserati': {
+      madeFor: 'Italian automotive heritage on the wrist. Bold, sporty designs inspired by the trident marque — made for the driver who loves style with a pulse.',
+      materials: 'Stainless-steel case with steel or leather strap and mineral crystal.',
+    },
+    'Michael Kors': {
+      madeFor: 'American glamour and everyday luxury. Polished, fashion-forward watches — made to finish an outfit with a statement.',
+      materials: 'Stainless-steel or gold-tone case with matching bracelet or leather strap and mineral crystal.',
+    },
     'Tissot': {
       madeFor: 'Swiss-made since 1853. Precision movements in classic dress cases — made for the office, ceremonies and a lifetime of everyday elegance.',
       materials: 'Stainless-steel case and bracelet, scratch-resistant sapphire or mineral crystal, Swiss quartz or automatic movement.',
