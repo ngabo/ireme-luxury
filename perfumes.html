@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
 
   <!-- Compiled Tailwind CSS (npm run build) -->
-  <link rel="stylesheet" href="css/styles.css?v=20261002" />
+  <link rel="stylesheet" href="css/styles.css?v=20261002d" />
 </head>
 
 <body data-category="perfumes" class="bg-ivory font-body text-text">
@@ -73,21 +73,35 @@
   <main id="catalog">
     <!-- ============ HERO ============ -->
     <section class="relative overflow-hidden bg-ink text-white" aria-labelledby="hero-heading">
-      <div class="pointer-events-none absolute inset-y-0 right-0 hidden w-[46%] items-center justify-center sm:flex" aria-hidden="true">
-        <div id="hero-slideshow" class="hero-slideshow hero-slideshow--light h-[78%] w-[78%] max-w-md rounded-[3px] bg-white shadow-2xl">
-          <img src="images/perfumes/1-million.webp" alt="" class="is-active" />
-          <img src="images/perfumes/ambre-edt.webp" alt="" loading="lazy" />
-          <img src="images/perfumes/ambre-gift-set.webp" alt="" loading="lazy" />
-        </div>
+      <div class="hero-fade absolute inset-y-0 right-0 w-full opacity-45 sm:w-[58%] sm:opacity-100" aria-hidden="true">
+        <img src="images/hero/perfume-banner.webp" alt="" width="1120" height="568" fetchpriority="high"
+             class="h-full w-full object-cover object-center" />
       </div>
       <div class="absolute inset-0 bg-gradient-to-r from-ink via-ink/70 to-transparent sm:hidden" aria-hidden="true"></div>
-      <div class="relative flex flex-col items-center px-4 py-10 text-center sm:w-[57%] sm:px-6 sm:py-14 lg:py-16">
-        <h1 id="hero-heading" class="font-display text-3xl font-semibold uppercase leading-[1.1] tracking-[0.02em] sm:text-4xl lg:text-5xl"><span class="text-gold">Scent,</span> Refined.</h1>
-        <p class="mx-auto mt-4 max-w-md text-lg font-light tracking-wide text-white/85 sm:text-xl">Discover authentic fine fragrances in Kigali.</p>
-        <div class="mt-8 flex flex-wrap justify-center gap-3 sm:gap-4">
+      <div class="relative mx-auto max-w-[1440px] px-4 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-16">
+        <p class="flex items-center gap-4 text-[0.6875rem] font-normal uppercase tracking-[0.4em] text-white/80 sm:text-xs">
+          Premium Fragrances <span class="h-px w-12 bg-gold" aria-hidden="true"></span>
+        </p>
+        <h1 id="hero-heading" class="mt-4 font-display text-3xl font-semibold uppercase leading-[1.1] tracking-[0.02em] sm:text-4xl lg:text-5xl"><span class="text-gold">Scent,</span> Refined.</h1>
+        <p class="mt-4 max-w-md text-lg font-light tracking-wide text-white/85 sm:text-xl">Discover authentic fine fragrances in Kigali.<br />Iconic brands. Lasting impressions.</p>
+        <div class="mt-8 flex flex-wrap gap-3 sm:gap-4">
           <a href="#catalog-top" class="btn-lux">Shop perfumes <span aria-hidden="true">&rarr;</span></a>
           <a href="watches.html#brands" class="btn-lux-outline">Explore brands</a>
         </div>
+        <ul class="mt-8 hidden flex-wrap items-center gap-y-3 text-sm text-white/80 sm:flex" role="list">
+          <li class="flex items-center gap-2.5 pr-5">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" class="h-6 w-6 text-gold" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" /></svg>
+            Authentic Products
+          </li>
+          <li class="flex items-center gap-2.5 border-l border-white/20 px-5">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" class="h-6 w-6 text-gold" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>
+            Secure Payment
+          </li>
+          <li class="flex items-center gap-2.5 border-l border-white/20 px-5">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" class="h-6 w-6 text-gold" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 3h12l3.5 5.25L12 21 2.5 8.25 6 3zM2.5 8.25h19M9 3l-1.5 5.25L12 21l4.5-12.75L15 3" /></svg>
+            Premium Selection
+          </li>
+        </ul>
       </div>
     </section>
 
@@ -231,17 +245,5 @@
   <script src="js/products.js?v=20261002"></script>
   <script src="js/site.js?v=20261002"></script>
   <script src="js/catalog.js?v=20261002"></script>
-  <script>
-    (function () {
-      var slides = document.querySelectorAll('#hero-slideshow img');
-      if (slides.length < 2) return;
-      var current = 0;
-      setInterval(function () {
-        slides[current].classList.remove('is-active');
-        current = (current + 1) % slides.length;
-        slides[current].classList.add('is-active');
-      }, 5000);
-    })();
-  </script>
 </body>
 </html>
