@@ -1,121 +1,97 @@
 // Ireme Luxury — category listing renderer.
-// Expects: body[data-category="watches"|"perfumes"] and the toolbar/grid elements below.
+// Expects: body[data-category="watches"|"perfumes"] and the toolbar/sidebar/grid elements below.
 // Cards render whichever fields a product has: brand, name, ref (SKU), desc, retail, price.
+// Bag and wishlist come from js/site.js (window.IremeStore).
 
 (function () {
   const DATA = { watches: IREME_WATCHES, perfumes: IREME_PERFUMES };
   const items = DATA[document.body.dataset.category] || [];
-  const DARK = document.body.dataset.theme === 'dark';
+  const store = window.IremeStore;
+  const $ = (id) => document.getElementById(id);
 
-  const grid = document.getElementById('product-grid');
-  const searchInput = document.getElementById('catalog-search');
-  const sortSelect = document.getElementById('catalog-sort');
-  const perPageSelect = document.getElementById('catalog-per-page');
-  const countEl = document.getElementById('results-count');
-  const emptyEl = document.getElementById('empty-state');
-  const prevBtn = document.getElementById('pager-prev');
-  const nextBtn = document.getElementById('pager-next');
-  const pageInfo = document.getElementById('pager-info');
-  const brandFilter = document.getElementById('brand-filter');
+  const grid = $('product-grid');
+  const searchInput = $('catalog-search');
+  const sortSelect = $('catalog-sort');
+  const perPageSelect = $('catalog-per-page');
+  const countEl = $('results-count');
+  const emptyEl = $('empty-state');
+  const prevBtn = $('pager-prev');
+  const nextBtn = $('pager-next');
+  const pageInfo = $('pager-info');
+  const brandPills = $('brand-filter');
+  const brandChecks = $('brand-checks');
+  const priceBox = $('price-filter');
+  const priceMin = $('price-min');
+  const priceMax = $('price-max');
+  const priceFill = $('price-fill');
+  const priceLabel = $('price-label');
 
+  const priced = items.filter((p) => p.price);
+  const PRICE_STEP = 10000;
+  const LO = priced.length ? Math.floor(Math.min(...priced.map((p) => p.price)) / PRICE_STEP) * PRICE_STEP : 0;
+  const HI = priced.length ? Math.ceil(Math.max(...priced.map((p) => p.price)) / PRICE_STEP) * PRICE_STEP : 0;
+
+  const params = new URLSearchParams(location.search);
   const state = {
-    q: '',
+    q: params.get('q') || '',
     sort: 'featured',
     perPage: parseInt(perPageSelect.value, 10) || 12,
     page: 1,
-    brand: 'all',
+    brands: new Set(),
+    min: LO,
+    max: HI,
   };
+  if (state.q) searchInput.value = state.q;
 
   const rwf = (n) => 'RWF ' + n.toLocaleString('en-US');
+  const byRef = (ref) => items.find((p) => p.ref === ref);
 
   const BADGE_SVG =
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5" aria-hidden="true">' +
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-4 w-4 shrink-0" aria-hidden="true">' +
     '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />' +
     '</svg>';
 
-  const HEART_SVG =
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" class="h-5 w-5" aria-hidden="true">' +
-    '<path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />' +
-    '</svg>';
+  const HEART_PATH = 'M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z';
+  const heartSVG = (on) =>
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="' + (on ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="1.4" class="h-5 w-5" aria-hidden="true">' +
+    '<path stroke-linecap="round" stroke-linejoin="round" d="' + HEART_PATH + '" /></svg>';
 
-  function cardDark(p) {
-    let meta = '';
-    if (p.brand) {
-      meta += '<p class="text-[0.625rem] font-medium uppercase tracking-luxe text-gold-light">' + p.brand + '</p>';
-    }
-    meta += '<h3 class="mt-1.5 font-display text-base font-medium leading-snug text-cream transition-colors duration-200 group-hover:text-gold-light">' + (p.name || p.ref) + '</h3>';
-    if (p.name) {
-      meta += '<p class="mt-1 text-[0.6875rem] uppercase tracking-wide2 text-cream/50">Ref. ' + p.ref + '</p>';
-    }
-    if (p.desc) {
-      meta += '<p class="mt-1.5 text-sm font-light leading-relaxed text-cream/50">' + p.desc + '</p>';
-    }
+  const BAG_SVG =
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="hidden h-4 w-4 sm:block" aria-hidden="true">' +
+    '<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" /></svg>';
 
-    const priceHTML = p.price
-      ? '<span>' + (p.retail ? '<span class="text-cream/40 line-through">Retail ' + rwf(p.retail) + '</span><br />' : '') +
-        '<span class="mt-1 inline-block text-base text-cream"><span class="text-cream/50">RWF</span> <span class="font-medium">' + p.price.toLocaleString('en-US') + '</span></span></span>'
-      : '<span class="mt-1 inline-block text-sm font-light normal-case text-cream/50">Enquire for price</span>';
-
+  function cardHTML(p) {
+    const wished = store && store.inWishlist(p.ref);
+    const heading = p.name || 'Ref. ' + p.ref;
     return (
       '<li>' +
-      '<a href="#" data-ref="' + p.ref + '" aria-haspopup="dialog" class="group block cursor-pointer border border-cream/10 bg-charcoal transition-colors duration-300 hover:border-gold/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold">' +
-      '<div class="relative overflow-hidden p-3 pt-14">' +
-      '<span class="absolute left-1/2 top-3 inline-flex w-max -translate-x-1/2 items-center gap-1.5 border border-cream/10 bg-black/80 px-3 py-1.5 text-[0.625rem] font-medium uppercase tracking-wide2 text-gold-pale backdrop-blur-sm">' +
-      BADGE_SVG + 'Authenticity Guaranteed</span>' +
+      '<article class="group relative flex h-full flex-col rounded-[3px] border border-line bg-white shadow-card transition duration-300 hover:-translate-y-1 hover:shadow-lift">' +
+      '<button type="button" data-wish="' + p.ref + '" aria-pressed="' + !!wished + '" aria-label="' + (wished ? 'Remove from' : 'Save to') + ' wishlist" ' +
+      'class="absolute right-2 top-2 z-10 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-colors duration-200 hover:text-gold-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold ' +
+      (wished ? 'text-gold' : 'text-text/70') + '">' + heartSVG(wished) + '</button>' +
+      '<a href="#" data-ref="' + p.ref + '" aria-haspopup="dialog" class="block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-gold">' +
+      '<div class="overflow-hidden bg-white px-4 pb-2 pt-8 sm:px-6 sm:pt-10">' +
       '<img src="' + p.img.src + '" alt="' + p.img.alt + '" width="600" height="600" loading="lazy" ' +
-      'class="aspect-square w-full bg-white object-contain transition-opacity duration-300 group-hover:opacity-90" />' +
-      '</div>' +
-      '<div class="px-5 pb-5 pt-2">' + meta +
-      '<p class="mt-3 flex items-center justify-between text-sm tracking-wide2">' +
-      priceHTML +
-      '<span class="text-cream/50 transition-colors duration-200 group-hover:text-gold-light" aria-hidden="true">' + HEART_SVG + '</span>' +
-      '</p>' +
+      'class="aspect-square w-full object-contain transition-transform duration-300 ease-out group-hover:scale-105" />' +
       '</div>' +
       '</a>' +
+      '<div class="flex flex-1 flex-col px-3 pb-4 pt-3 sm:px-5 sm:pb-5">' +
+      '<p class="flex items-center gap-1.5 text-[0.6875rem] text-muted sm:text-xs">' + '<span class="text-gold">' + BADGE_SVG + '</span>Authenticity Guaranteed</p>' +
+      (p.brand ? '<p class="mt-3 text-[0.625rem] font-medium uppercase tracking-luxe text-gold-dark sm:text-[0.6875rem]">' + p.brand + '</p>' : '') +
+      '<h3 class="mt-1 text-sm leading-snug text-text sm:text-base"><a href="#" data-ref="' + p.ref + '" aria-haspopup="dialog" class="transition-colors duration-200 hover:text-gold-dark">' + heading + '</a></h3>' +
+      (p.name ? '<p class="mt-0.5 text-xs text-muted">' + p.ref + '</p>' : '') +
+      (p.desc ? '<p class="mt-1.5 line-clamp-2 text-xs leading-relaxed text-muted">' + p.desc + '</p>' : '') +
+      '<p class="mt-3 text-base font-medium tracking-wide text-text sm:text-lg">' + (p.price ? rwf(p.price) : '<span class="text-sm font-normal text-muted">Price on request</span>') + '</p>' +
+      '<div class="mt-auto pt-4">' +
+      '<button type="button" data-add="' + p.ref + '" class="btn-cart">' + BAG_SVG + '<span>Add to cart</span></button>' +
+      '</div>' +
+      '</div>' +
+      '</article>' +
       '</li>'
     );
   }
 
-  function cardLight(p) {
-    let meta = '';
-    if (p.brand) {
-      meta += '<p class="text-[0.625rem] font-medium uppercase tracking-luxe text-gold">' + p.brand + '</p>';
-    }
-    if (p.name) {
-      meta += '<h3 class="mt-1 font-display text-lg font-medium leading-snug transition-colors duration-200 group-hover:text-gold">' + p.name + '</h3>';
-      meta += '<p class="mt-1 text-[0.6875rem] uppercase tracking-wide2 text-charcoal-soft">Ref. ' + p.ref + '</p>';
-    } else {
-      meta += '<h3 class="mt-1 font-display text-lg font-medium leading-snug transition-colors duration-200 group-hover:text-gold">' + p.ref + '</h3>';
-    }
-    if (p.desc) {
-      meta += '<p class="mt-1.5 text-sm font-light leading-relaxed text-charcoal-soft">' + p.desc + '</p>';
-    }
-
-    let priceHTML = '';
-    if (p.retail) {
-      priceHTML += '<span class="text-charcoal-soft/70 line-through">Retail ' + rwf(p.retail) + '</span><br />';
-    }
-    priceHTML += '<span class="mt-1 inline-block text-base"><span class="text-charcoal-soft">RWF</span> <span class="font-medium">' + p.price.toLocaleString('en-US') + '</span></span>';
-
-    return (
-      '<li>' +
-      '<a href="#" class="group block cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold">' +
-      '<div class="relative overflow-hidden bg-cream">' +
-      '<img src="' + p.img.src + '" alt="' + p.img.alt + '" width="600" height="600" loading="lazy" ' +
-      'class="aspect-square w-full bg-white object-contain transition-opacity duration-300 group-hover:opacity-90" />' +
-      '<span class="absolute left-4 top-4 inline-flex items-center gap-1.5 bg-charcoal/90 px-3 py-1.5 text-[0.625rem] font-medium uppercase tracking-wide2 text-gold-pale backdrop-blur-sm">' +
-      BADGE_SVG + 'Authenticity Guaranteed</span>' +
-      '</div>' +
-      '<div class="mt-5">' + meta + '</div>' +
-      '<p class="mt-3 text-sm tracking-wide2">' + priceHTML + '</p>' +
-      '</a>' +
-      '</li>'
-    );
-  }
-
-  const cardHTML = DARK ? cardDark : cardLight;
-
-  // ---------- Product detail modal (watches) ----------
+  // ---------- Product detail modal ----------
   const BRAND_INFO = {
     'Hugo Boss': {
       madeFor: 'German design house since 1924. Sharp, modern dress and sport watches — made for the professional who values understated confidence.',
@@ -147,20 +123,6 @@
     },
   };
 
-  let lastFocus = null;
-
-  function closeModal() {
-    const overlay = document.getElementById('catalog-modal');
-    if (overlay) overlay.remove();
-    document.body.style.overflow = '';
-    document.removeEventListener('keydown', onModalKey);
-    if (lastFocus) lastFocus.focus();
-  }
-
-  function onModalKey(e) {
-    if (e.key === 'Escape') closeModal();
-  }
-
   const STRAP_INFO = {
     rubber: {
       madeFor: 'A quick way to give your watch a new character — swap colours for sport, travel or the weekend. Available in 20 mm and 22 mm widths.',
@@ -172,6 +134,20 @@
     },
   };
 
+  let lastFocus = null;
+
+  function closeModal() {
+    const overlay = $('catalog-modal');
+    if (overlay) overlay.remove();
+    document.body.style.overflow = '';
+    document.removeEventListener('keydown', onModalKey);
+    if (lastFocus) lastFocus.focus();
+  }
+
+  function onModalKey(e) {
+    if (e.key === 'Escape') closeModal();
+  }
+
   function openModal(p) {
     let info;
     if (p.type === 'strap') {
@@ -182,51 +158,55 @@
     if (!info || !info.madeFor) return;
     lastFocus = document.activeElement;
 
+    const tick = '<span class="text-gold">' + BADGE_SVG + '</span>';
     const overlay = document.createElement('div');
     overlay.id = 'catalog-modal';
-    overlay.className = 'fixed inset-0 z-[60] overflow-y-auto bg-black/80 p-4 backdrop-blur-sm sm:p-8';
+    overlay.className = 'fixed inset-0 z-[60] overflow-y-auto bg-black/60 p-4 backdrop-blur-sm sm:p-8';
     overlay.setAttribute('role', 'dialog');
     overlay.setAttribute('aria-modal', 'true');
     overlay.setAttribute('aria-label', p.brand + ' ' + p.ref + ' details');
 
     overlay.innerHTML =
-      '<div class="relative mx-auto my-4 w-full max-w-4xl border border-cream/10 bg-charcoal sm:my-8" data-modal-panel>' +
+      '<div class="relative mx-auto my-4 w-full max-w-4xl rounded-[3px] bg-white text-text shadow-2xl sm:my-8" data-modal-panel>' +
       '<button type="button" data-modal-close aria-label="Close details" ' +
-      'class="absolute right-3 top-3 z-10 flex h-11 w-11 cursor-pointer items-center justify-center bg-black/60 text-cream transition-colors duration-200 hover:text-gold-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold">' +
+      'class="absolute right-3 top-3 z-10 flex h-11 w-11 cursor-pointer items-center justify-center text-muted transition-colors duration-200 hover:text-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold">' +
       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-5 w-5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>' +
       '</button>' +
       '<div class="grid sm:grid-cols-2">' +
-      '<img src="' + p.img.src + '" alt="' + p.img.alt + '" width="600" height="600" ' +
-      'class="aspect-square w-full bg-white object-contain" />' +
+      '<div class="border-b border-line p-6 sm:border-b-0 sm:border-r">' +
+      '<img src="' + p.img.src + '" alt="' + p.img.alt + '" width="600" height="600" class="aspect-square w-full object-contain" />' +
+      '</div>' +
       '<div class="flex flex-col p-7 lg:p-9">' +
-      '<p class="text-[0.625rem] font-medium uppercase tracking-luxe text-gold-light">' + p.brand + '</p>' +
-      '<h2 class="mt-2 font-display text-2xl font-medium leading-snug text-cream">' + (p.name || p.ref) + '</h2>' +
+      '<p class="text-[0.6875rem] font-medium uppercase tracking-luxe text-gold-dark">' + p.brand + '</p>' +
+      '<h2 class="mt-2 font-display text-3xl leading-snug">' + (p.name || 'Ref. ' + p.ref) + '</h2>' +
+      (p.name ? '<p class="mt-1 text-sm text-muted">Ref. ' + p.ref + '</p>' : '') +
       (p.price
-        ? '<p class="mt-3 text-lg tracking-wide2 text-cream"><span class="text-cream/50 text-sm">RWF</span> <span class="font-medium">' + p.price.toLocaleString('en-US') + '</span></p>'
-        : '<p class="mt-3 text-sm font-light text-cream/50">Contact us for the current price and availability.</p>') +
-      '<div class="my-6 h-px bg-cream/10" aria-hidden="true"></div>' +
-      '<h3 class="text-[0.6875rem] font-medium uppercase tracking-luxe text-gold-light">' + (info.heading || 'Made for') + '</h3>' +
-      '<p class="mt-3 text-sm font-light leading-relaxed text-cream/70">' + info.madeFor + '</p>' +
+        ? '<p class="mt-4 text-xl font-medium tracking-wide">' + rwf(p.price) + '</p>'
+        : '<p class="mt-4 text-sm text-muted">Contact us for the current price and availability.</p>') +
+      '<button type="button" data-add="' + p.ref + '" class="btn-cart mt-6 sm:max-w-xs">' + BAG_SVG + '<span>Add to cart</span></button>' +
+      '<div class="my-7 h-px bg-line" aria-hidden="true"></div>' +
+      '<h3 class="text-[0.6875rem] font-medium uppercase tracking-luxe text-gold-dark">' + (info.heading || 'Made for') + '</h3>' +
+      '<p class="mt-3 text-sm leading-relaxed text-muted">' + info.madeFor + '</p>' +
       (info.materials
-        ? '<h3 class="mt-6 text-[0.6875rem] font-medium uppercase tracking-luxe text-gold-light">Materials</h3>' +
-          '<p class="mt-3 text-sm font-light leading-relaxed text-cream/70">' + info.materials + '</p>' +
-          '<p class="mt-2 text-xs font-light text-cream/40">Exact specifications for this reference are provided with its certificate on delivery.</p>'
+        ? '<h3 class="mt-6 text-[0.6875rem] font-medium uppercase tracking-luxe text-gold-dark">Materials</h3>' +
+          '<p class="mt-3 text-sm leading-relaxed text-muted">' + info.materials + '</p>' +
+          '<p class="mt-2 text-xs text-muted/80">Exact specifications for this reference are provided with its certificate on delivery.</p>'
         : '') +
-      '<ul class="mt-6 space-y-2 text-sm font-light text-cream/60">' +
-      '<li class="flex items-center gap-2.5">' + BADGE_SVG + 'Original &amp; certified — authenticity guaranteed</li>' +
+      '<ul class="mt-6 space-y-2 text-sm text-text/80">' +
+      '<li class="flex items-center gap-2.5">' + tick + 'Original &amp; certified — authenticity guaranteed</li>' +
       (document.body.dataset.category === 'perfumes'
-        ? '<li class="flex items-center gap-2.5">' + BADGE_SVG + 'Batch-verified, stored away from heat and light</li>'
-        : '<li class="flex items-center gap-2.5">' + BADGE_SVG + 'Two-year local warranty included</li>') +
-      '<li class="flex items-center gap-2.5">' + BADGE_SVG + 'Delivered across Rwanda</li>' +
+        ? '<li class="flex items-center gap-2.5">' + tick + 'Batch-verified, stored away from heat and light</li>'
+        : '<li class="flex items-center gap-2.5">' + tick + 'Two-year local warranty included</li>') +
+      '<li class="flex items-center gap-2.5">' + tick + 'Delivered across Rwanda</li>' +
       '</ul>' +
-      (p.price ? '' :
-        '<a href="contact.html" class="btn-gold mt-7 self-start">Contact us</a>') +
       '</div>' +
       '</div>' +
       '</div>';
 
     overlay.addEventListener('click', (e) => {
-      if (e.target === overlay || e.target.closest('[data-modal-close]')) closeModal();
+      if (e.target === overlay || e.target.closest('[data-modal-close]')) return closeModal();
+      const add = e.target.closest('[data-add]');
+      if (add) addToBag(add);
     });
     document.body.appendChild(overlay);
     document.body.style.overflow = 'hidden';
@@ -234,50 +214,159 @@
     overlay.querySelector('[data-modal-close]').focus();
   }
 
+  // ---------- Card actions ----------
+  function addToBag(btn) {
+    const p = byRef(btn.dataset.add);
+    if (!p || !store) return;
+    store.addToBag(p);
+    const label = btn.querySelector('span');
+    btn.disabled = true;
+    label.textContent = 'Added ✓';
+    setTimeout(() => { label.textContent = 'Add to cart'; btn.disabled = false; }, 1400);
+  }
+
   grid.addEventListener('click', (e) => {
+    const add = e.target.closest('[data-add]');
+    if (add) return addToBag(add);
+
+    const wish = e.target.closest('[data-wish]');
+    if (wish && store) {
+      const on = store.toggleWishlist(byRef(wish.dataset.wish));
+      wish.setAttribute('aria-pressed', on);
+      wish.setAttribute('aria-label', (on ? 'Remove from' : 'Save to') + ' wishlist');
+      wish.classList.toggle('text-gold', on);
+      wish.classList.toggle('text-text/70', !on);
+      wish.innerHTML = heartSVG(on);
+      return;
+    }
+
     const link = e.target.closest('a[data-ref]');
     if (!link) return;
     e.preventDefault();
-    const item = items.find((p) => p.ref === link.dataset.ref);
+    const item = byRef(link.dataset.ref);
     if (item) openModal(item);
   });
 
-  function renderBrandFilter() {
-    if (!brandFilter) return;
-    const brands = [...new Set(items.map((p) => p.brand).filter(Boolean))];
-    if (brands.length < 2) {
-      brandFilter.classList.add('hidden');
-      return;
-    }
-    const base =
-      'cursor-pointer border px-5 py-2.5 text-[0.75rem] font-medium uppercase tracking-wide2 transition-colors duration-200 ' +
-      'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold ';
-    const idle = DARK
-      ? base + 'border-cream/20 text-cream hover:border-gold hover:text-gold-light'
-      : base + 'border-charcoal/20 text-charcoal hover:border-gold hover:text-gold';
-    const active = DARK
-      ? base + 'border-gold bg-gold text-charcoal-deep'
-      : base + 'border-charcoal bg-charcoal text-cream';
-    brandFilter.innerHTML = ['all'].concat(brands).map((b) => {
-      const label = b === 'all' ? 'All brands' : b;
-      const cls = state.brand === b ? active : idle;
-      const pressed = state.brand === b ? 'true' : 'false';
-      return '<button type="button" data-brand="' + b + '" aria-pressed="' + pressed + '" class="' + cls + '">' + label + '</button>';
-    }).join('');
-    brandFilter.querySelectorAll('button').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        state.brand = btn.dataset.brand;
-        state.page = 1;
-        renderBrandFilter();
-        apply();
-      });
+  // Hearts follow wishlist changes made in the drawer
+  if (store) store.onChange(() => {
+    grid.querySelectorAll('[data-wish]').forEach((b) => {
+      const on = store.inWishlist(b.dataset.wish);
+      if ((b.getAttribute('aria-pressed') === 'true') === on) return;
+      b.setAttribute('aria-pressed', on);
+      b.classList.toggle('text-gold', on);
+      b.classList.toggle('text-text/70', !on);
+      b.innerHTML = heartSVG(on);
     });
+  });
+
+  // ---------- Brand filters (pills + sidebar checkboxes share one state) ----------
+  const brandCounts = items.reduce((m, p) => { if (p.brand) m[p.brand] = (m[p.brand] || 0) + 1; return m; }, {});
+  const brands = Object.keys(brandCounts);
+
+  function renderBrandFilters() {
+    if (brandPills) {
+      if (brands.length < 2) brandPills.classList.add('hidden');
+      brandPills.innerHTML = ['all'].concat(brands).map((b) => {
+        const pressed = b === 'all' ? state.brands.size === 0 : state.brands.size === 1 && state.brands.has(b);
+        return '<button type="button" data-brand="' + b + '" aria-pressed="' + pressed + '" class="pill">' + (b === 'all' ? 'All' : b) + '</button>';
+      }).join('');
+    }
+    if (brandChecks) {
+      brandChecks.innerHTML = brands.map((b, i) =>
+        '<li><label class="flex cursor-pointer items-center gap-3 py-1.5 text-sm text-text/85 transition-colors duration-200 hover:text-text">' +
+        '<input type="checkbox" class="filter-check" value="' + b + '" id="brand-' + i + '"' + (state.brands.has(b) ? ' checked' : '') + ' />' +
+        b + ' <span class="text-muted">(' + brandCounts[b] + ')</span></label></li>'
+      ).join('');
+    }
   }
 
+  if (brandPills) brandPills.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-brand]');
+    if (!btn) return;
+    state.brands = btn.dataset.brand === 'all' ? new Set() : new Set([btn.dataset.brand]);
+    state.page = 1;
+    renderBrandFilters();
+    apply();
+  });
+
+  if (brandChecks) brandChecks.addEventListener('change', (e) => {
+    const box = e.target.closest('input[type=checkbox]');
+    if (!box) return;
+    if (box.checked) state.brands.add(box.value); else state.brands.delete(box.value);
+    state.page = 1;
+    renderBrandFilters();
+    brandChecks.querySelector('input[value="' + box.value + '"]').focus();
+    apply();
+  });
+
+  // ---------- Price range ----------
+  function renderPrice() {
+    if (!priceBox) return;
+    const span = HI - LO || 1;
+    priceFill.style.left = ((state.min - LO) / span) * 100 + '%';
+    priceFill.style.right = (100 - ((state.max - LO) / span) * 100) + '%';
+    priceLabel.textContent = rwf(state.min) + ' – ' + rwf(state.max);
+  }
+
+  if (priceBox) {
+    if (!priced.length) {
+      priceBox.classList.add('hidden');
+    } else {
+      [priceMin, priceMax].forEach((r) => { r.min = LO; r.max = HI; r.step = PRICE_STEP; });
+      priceMin.value = LO;
+      priceMax.value = HI;
+      const onSlide = (e) => {
+        let lo = +priceMin.value, hi = +priceMax.value;
+        if (lo > hi) { if (e.target === priceMin) lo = hi; else hi = lo; }
+        priceMin.value = state.min = lo;
+        priceMax.value = state.max = hi;
+        state.page = 1;
+        renderPrice();
+        apply();
+      };
+      priceMin.addEventListener('input', onSlide);
+      priceMax.addEventListener('input', onSlide);
+      renderPrice();
+    }
+  }
+
+  // ---------- Reset ----------
+  const resetBtn = $('filter-reset');
+  if (resetBtn) resetBtn.addEventListener('click', () => {
+    state.brands = new Set();
+    state.min = LO; state.max = HI;
+    state.q = ''; searchInput.value = '';
+    if (priceMin) { priceMin.value = LO; priceMax.value = HI; renderPrice(); }
+    state.page = 1;
+    renderBrandFilters();
+    apply();
+  });
+
+  // ---------- Mobile filter drawer ----------
+  const drawer = $('filter-panel');
+  const drawerBackdrop = $('filter-backdrop');
+  const openBtn = $('filter-open');
+  function setFilterDrawer(open) {
+    drawer.classList.toggle('is-open', open);
+    drawerBackdrop.classList.toggle('is-open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+    if (openBtn) openBtn.setAttribute('aria-expanded', open);
+    if (open) drawer.querySelector('[data-filter-close]').focus(); else if (openBtn) openBtn.focus();
+  }
+  if (drawer && openBtn) {
+    openBtn.addEventListener('click', () => setFilterDrawer(true));
+    drawerBackdrop.addEventListener('click', () => setFilterDrawer(false));
+    drawer.querySelectorAll('[data-filter-close]').forEach((b) => b.addEventListener('click', () => setFilterDrawer(false)));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && drawer.classList.contains('is-open')) setFilterDrawer(false); });
+  }
+
+  // ---------- Filter + sort + paginate ----------
   function apply() {
     const q = state.q.trim().toLowerCase();
+    const priceActive = priced.length && (state.min > LO || state.max < HI);
     let list = items.filter((p) => {
-      if (state.brand !== 'all' && p.brand !== state.brand) return false;
+      if (state.brands.size && !state.brands.has(p.brand)) return false;
+      if (priceActive && (!p.price || p.price < state.min || p.price > state.max)) return false;
       if (!q) return true;
       return (
         p.ref.toLowerCase().includes(q) ||
@@ -301,25 +390,33 @@
     emptyEl.classList.toggle('hidden', total > 0);
     grid.classList.toggle('hidden', total === 0);
 
-    countEl.textContent = total === 0
-      ? 'No results'
-      : 'Showing ' + (start + 1) + ' to ' + (start + shown.length) + ' of ' + total + ' results';
+    countEl.textContent = total.toLocaleString('en-US') + (total === 1 ? ' product' : ' products');
+    const showing = $('results-range');
+    if (showing) showing.textContent = total ? 'Showing ' + (start + 1) + '–' + (start + shown.length) + ' of ' + total.toLocaleString('en-US') : '';
 
     pageInfo.textContent = 'Page ' + state.page + ' of ' + pages;
     prevBtn.disabled = state.page <= 1;
     nextBtn.disabled = state.page >= pages;
+    const pager = prevBtn.closest('nav');
+    if (pager) pager.classList.toggle('hidden', pages <= 1);
   }
 
   searchInput.addEventListener('input', () => { state.q = searchInput.value; state.page = 1; apply(); });
+  const searchForm = searchInput.form;
+  if (searchForm) searchForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    $('catalog-top').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
   sortSelect.addEventListener('change', () => { state.sort = sortSelect.value; state.page = 1; apply(); });
   perPageSelect.addEventListener('change', () => {
     state.perPage = perPageSelect.value === 'all' ? items.length || 1 : parseInt(perPageSelect.value, 10);
     state.page = 1;
     apply();
   });
-  prevBtn.addEventListener('click', () => { state.page -= 1; apply(); grid.scrollIntoView({ block: 'start' }); });
-  nextBtn.addEventListener('click', () => { state.page += 1; apply(); grid.scrollIntoView({ block: 'start' }); });
+  const toTop = () => $('catalog-top').scrollIntoView({ block: 'start' });
+  prevBtn.addEventListener('click', () => { state.page -= 1; apply(); toTop(); });
+  nextBtn.addEventListener('click', () => { state.page += 1; apply(); toTop(); });
 
-  renderBrandFilter();
+  renderBrandFilters();
   apply();
 })();

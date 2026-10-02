@@ -8,10 +8,10 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
 
   <!-- Compiled Tailwind CSS (npm run build) -->
-  <link rel="stylesheet" href="css/styles.css?v=20260718c" />
+  <link rel="stylesheet" href="css/styles.css?v=20261002" />
 </head>
 
 <body class="bg-charcoal-deep text-cream">
@@ -19,65 +19,53 @@
     Skip to contact form
   </a>
 
-  <!-- ============ UTILITY BAR ============ -->
-  <div class="border-b border-cream/10 bg-black">
-    <div class="mx-auto flex max-w-7xl items-center justify-center gap-8 px-6 py-2.5 text-[0.625rem] uppercase tracking-wide2 text-cream/60 sm:justify-between lg:px-10">
-      <p class="hidden items-center gap-2 sm:flex">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5 text-gold-light" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" /></svg>
-        <a href="tel:+250786753764" class="transition-colors duration-200 hover:text-gold-light">+250 786 753 764</a>
-      </p>
-      <p class="flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5 text-gold-light" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>
-        Authenticity guaranteed
-      </p>
-      <p class="hidden items-center gap-2 sm:flex">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5 text-gold-light" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
-        Secure payment
-      </p>
-    </div>
-  </div>
-
   <!-- ============ HEADER ============ -->
-  <header class="sticky top-0 z-50 border-b border-cream/10 bg-charcoal-deep/95 backdrop-blur-sm">
-    <div class="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-10">
+  <header class="sticky top-0 z-50 border-b border-white/10 bg-ink text-white">
+    <div class="mx-auto flex max-w-[1440px] flex-wrap items-center gap-x-6 px-4 sm:px-6 lg:h-20 lg:flex-nowrap lg:px-10">
 
-      <a href="watches.html" class="flex flex-col focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold" aria-label="Ireme Luxury — home">
-        <span class="font-display text-2xl font-medium tracking-[0.3em] text-gold-light lg:text-[1.75rem]">IREME</span>
-        <span class="mt-0.5 text-[0.5625rem] uppercase tracking-[0.45em] text-cream/50">Luxury &middot; Kigali</span>
+      <a href="watches.html" class="order-1 flex flex-col py-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold lg:py-0" aria-label="Ireme Luxury — watches">
+        <span class="font-display text-[1.75rem] font-medium leading-none tracking-[0.2em] text-gold lg:text-[2rem]">IREME</span>
+        <span class="mt-1.5 text-[0.5625rem] uppercase tracking-[0.5em] text-white/70">Luxury &middot; Kigali</span>
       </a>
 
-      <nav class="hidden items-center gap-9 lg:flex" aria-label="Primary">
-        <a href="watches.html" class="nav-link-dark">Watches</a>
-        <a href="perfumes.html" class="nav-link-dark">Perfumes</a>
-        <a href="#" class="nav-link-dark">About Us</a>
-        <a href="contact.html" class="nav-link-dark text-gold-light" aria-current="page">Contact</a>
+      <nav class="order-2 mx-auto hidden items-center gap-6 lg:flex xl:gap-10" aria-label="Primary">
+        <a href="watches.html" class="nav-link-lux">Watches</a>
+        <a href="perfumes.html" class="nav-link-lux">Perfumes</a>
+        <a href="watches.html#brands" class="nav-link-lux">Brands</a>
+        <a href="#" class="nav-link-lux">About Us</a>
+        <a href="contact.html" class="nav-link-lux" aria-current="page">Contact</a>
       </nav>
 
-      <div class="flex items-center gap-1 lg:gap-3">
-        <button type="button" class="flex h-11 w-11 cursor-pointer items-center justify-center text-cream/80 transition-colors duration-200 hover:text-gold-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold" aria-label="Search">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" class="h-5 w-5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z" /></svg>
+      <form action="watches.html" role="search" class="order-4 w-full pb-3 lg:order-3 lg:w-52 lg:pb-0 xl:w-80">
+        <label for="site-search" class="sr-only">Search watches, brands, models...</label>
+        <div class="relative">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" class="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-white/60" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z" /></svg>
+          <input id="site-search" name="q" type="search" autocomplete="off" placeholder="Search watches, brands, models..."
+                 class="w-full rounded-[2px] border border-white/25 bg-white/[0.04] py-2.5 pl-11 pr-3 text-sm font-light text-white placeholder:text-white/50 transition-colors duration-200 focus:border-gold focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold" />
+        </div>
+      </form>
+
+      <div class="order-3 ml-auto flex items-center lg:order-4 lg:ml-0 lg:gap-1">
+        <button id="wishlist-button" type="button" class="icon-btn" aria-label="My account &amp; wishlist">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" class="h-6 w-6" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
         </button>
-        <button type="button" class="hidden h-11 w-11 cursor-pointer items-center justify-center text-cream/80 transition-colors duration-200 hover:text-gold-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold sm:flex" aria-label="Account">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" class="h-5 w-5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+        <button id="bag-button" type="button" class="icon-btn" aria-label="Shopping bag, 0 items">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" class="h-6 w-6" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" /></svg>
+          <span id="bag-count" class="absolute right-0.5 top-0.5 flex h-[1.125rem] min-w-[1.125rem] items-center justify-center rounded-full bg-gold px-1 text-[0.625rem] font-medium text-ink">0</span>
         </button>
-        <button type="button" class="relative flex h-11 w-11 cursor-pointer items-center justify-center text-cream/80 transition-colors duration-200 hover:text-gold-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold" aria-label="Shopping bag, 0 items">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" class="h-5 w-5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" /></svg>
-          <span class="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[0.5625rem] font-medium text-charcoal-deep">0</span>
-        </button>
-        <button type="button" class="flex h-11 w-11 cursor-pointer items-center justify-center text-cream transition-colors duration-200 hover:text-gold-light lg:hidden"
-                aria-label="Open menu" aria-expanded="false"
-                onclick="document.getElementById('mobile-menu').classList.toggle('hidden'); this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') === 'false' ? 'true' : 'false');">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" class="h-6 w-6" aria-hidden="true"><path stroke-linecap="round" d="M3.75 7h16.5M3.75 12h16.5M3.75 17h16.5" /></svg>
+        <button id="menu-button" type="button" class="icon-btn lg:hidden" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" class="h-6 w-6" aria-hidden="true"><path stroke-linecap="round" d="M3.75 7h16.5M3.75 12h16.5M3.75 17h16.5" /></svg>
         </button>
       </div>
     </div>
 
-    <nav id="mobile-menu" class="hidden border-t border-cream/10 bg-charcoal-deep lg:hidden" aria-label="Mobile">
-      <div class="flex flex-col px-6 py-4">
-        <a href="watches.html" class="nav-link-dark py-3.5">Watches</a>
-        <a href="perfumes.html" class="nav-link-dark py-3.5">Perfumes</a>
-        <a href="#" class="nav-link-dark py-3.5">About Us</a>
-        <a href="contact.html" class="nav-link-dark py-3.5 text-gold-light" aria-current="page">Contact</a>
+    <nav id="mobile-menu" class="hidden border-t border-white/10 bg-ink lg:hidden" aria-label="Mobile">
+      <div class="flex flex-col items-start px-4 py-3 sm:px-6">
+        <a href="watches.html" class="nav-link-lux my-1.5">Watches</a>
+        <a href="perfumes.html" class="nav-link-lux my-1.5">Perfumes</a>
+        <a href="watches.html#brands" class="nav-link-lux my-1.5">Brands</a>
+        <a href="#" class="nav-link-lux my-1.5">About Us</a>
+        <a href="contact.html" class="nav-link-lux my-1.5" aria-current="page">Contact</a>
       </div>
     </nav>
   </header>
@@ -230,5 +218,6 @@
       <p class="text-xs">&copy; 2026 Ireme Luxury Ltd &middot; Kigali, Rwanda</p>
     </div>
   </footer>
+  <script src="js/site.js?v=20261002"></script>
 </body>
 </html>
