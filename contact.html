@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
 
   <!-- Compiled Tailwind CSS (npm run build) -->
-  <link rel="stylesheet" href="css/styles.css?v=20261002d" />
+  <link rel="stylesheet" href="css/styles.css?v=20261003" />
 </head>
 
 <body class="bg-charcoal-deep text-cream">
@@ -93,12 +93,7 @@
         <!-- Form -->
         <div class="lg:col-span-3">
           <h2 class="eyebrow">Send us a message</h2>
-          <form id="contact-form" class="mt-8" action="https://formsubmit.co/ngabochampion@gmail.com" method="POST">
-            <!-- FormSubmit settings -->
-            <input type="hidden" name="_subject" value="New message from the Ireme Luxury website" />
-            <input type="hidden" name="_template" value="table" />
-            <input type="hidden" name="_captcha" value="false" />
-            <input type="text" name="_honey" class="hidden" tabindex="-1" autocomplete="off" aria-hidden="true" />
+          <form id="contact-form" class="mt-8">
 
             <div class="grid gap-5 sm:grid-cols-2">
               <div>
@@ -107,8 +102,8 @@
                        class="w-full border border-cream/20 bg-charcoal px-5 py-3.5 text-sm font-light text-cream placeholder:text-cream/40 transition-colors duration-200 focus:border-gold focus:outline-none" />
               </div>
               <div>
-                <label for="cf-email" class="sr-only">Your email</label>
-                <input id="cf-email" name="email" type="email" required placeholder="Your email"
+                <label for="cf-email" class="sr-only">Your email (optional)</label>
+                <input id="cf-email" name="email" type="email" placeholder="Your email (optional)"
                        class="w-full border border-cream/20 bg-charcoal px-5 py-3.5 text-sm font-light text-cream placeholder:text-cream/40 transition-colors duration-200 focus:border-gold focus:outline-none" />
               </div>
             </div>
@@ -122,8 +117,8 @@
               <textarea id="cf-message" name="message" rows="6" required placeholder="Your message"
                         class="w-full resize-y border border-cream/20 bg-charcoal px-5 py-3.5 text-sm font-light text-cream placeholder:text-cream/40 transition-colors duration-200 focus:border-gold focus:outline-none"></textarea>
             </div>
-            <button type="submit" class="btn-gold mt-7">Send message</button>
-            <p class="mt-4 text-xs font-light text-cream/40">Your message goes directly to our team's inbox. We reply within one business day.</p>
+            <button type="submit" class="btn-gold mt-7">Send on WhatsApp</button>
+            <p class="mt-4 text-xs font-light text-cream/40">Your message opens in WhatsApp, ready to send to our team. We usually reply within the hour.</p>
           </form>
         </div>
 
@@ -142,7 +137,7 @@
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="h-7 w-7 shrink-0 text-gold-light" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" /></svg>
               <div>
                 <h3 class="font-display text-base text-cream">WhatsApp</h3>
-                <a href="https://wa.me/250786753764" target="_blank" rel="noopener" class="mt-1 block text-sm font-light text-cream/60 transition-colors duration-200 hover:text-gold-light">+250 786 753 764</a>
+                <a href="https://wa.me/33758585624" target="_blank" rel="noopener" class="mt-1 block text-sm font-light text-cream/60 transition-colors duration-200 hover:text-gold-light">+33 7 58 58 56 24</a>
               </div>
             </li>
             <li class="flex items-start gap-4">
@@ -218,6 +213,18 @@
       <p class="text-xs">&copy; 2026 Ireme Luxury Ltd &middot; Kigali, Rwanda</p>
     </div>
   </footer>
-  <script src="js/site.js?v=20261002"></script>
+  <script src="js/site.js?v=20261003"></script>
+  <script>
+    // Contact form: send the message to our WhatsApp instead of email.
+    document.getElementById('contact-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var f = e.target.elements;
+      var text = 'Hello Ireme Luxury,\n\n' +
+        'Name: ' + f.name.value + '\n' +
+        (f.email.value ? 'Email: ' + f.email.value + '\n' : '') +
+        'Subject: ' + f.subject.value + '\n\n' + f.message.value;
+      window.open('https://wa.me/33758585624?text=' + encodeURIComponent(text), '_blank', 'noopener');
+    });
+  </script>
 </body>
 </html>
