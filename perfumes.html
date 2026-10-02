@@ -84,26 +84,34 @@
 
   <main id="catalog">
     <!-- ============ CATEGORY HERO ============ -->
-    <section class="relative overflow-hidden border-b border-cream/10 bg-black" aria-labelledby="category-heading">
-      <img src="https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?q=80&w=1400&auto=format&fit=crop"
-           alt="" aria-hidden="true"
-           class="absolute inset-y-0 right-0 h-full w-full object-cover object-right opacity-60 lg:w-3/5" />
-      <div class="absolute inset-0 bg-gradient-to-r from-black via-black/85 to-black/25" aria-hidden="true"></div>
-      <div class="relative mx-auto max-w-7xl px-6 py-16 lg:px-10 lg:py-24">
-        <nav class="mb-6 text-[0.6875rem] uppercase tracking-wide2 text-cream/50" aria-label="Breadcrumb">
+    <section class="border-b border-cream/10 bg-black" aria-labelledby="category-heading">
+      <div class="mx-auto grid max-w-7xl items-center gap-6 px-6 py-6 lg:grid-cols-2 lg:gap-12 lg:px-10 lg:py-8">
+        <div>
+          <nav class="mb-3 text-[0.6875rem] uppercase tracking-wide2 text-cream/50" aria-label="Breadcrumb">
           <a href="index.html" class="transition-colors duration-200 hover:text-gold-light">Home</a>
           <span aria-hidden="true" class="mx-2">/</span>
           <span aria-current="page" class="text-gold-light">Perfumes</span>
         </nav>
-        <h1 id="category-heading" class="font-display text-5xl font-medium leading-tight text-cream sm:text-6xl">Perfumes</h1>
-        <p class="mt-6 max-w-md text-base font-light leading-relaxed text-cream/60">
+          <h1 id="category-heading" class="font-display text-3xl font-medium leading-tight text-cream sm:text-4xl">Perfumes</h1>
+          <p class="mt-3 max-w-md text-sm font-light leading-relaxed text-cream/60">
           Fine fragrances from the world&rsquo;s most iconic houses. Every bottle is original,
           batch-verified and stored away from heat and light.
         </p>
+        </div>
+
+        <!-- Slideshow of the collection -->
+        <figure class="relative mx-auto w-full max-w-md lg:max-w-none">
+          <div class="absolute -inset-2 border border-gold/30" aria-hidden="true"></div>
+          <div id="hero-slideshow" class="hero-slideshow hero-slideshow--light h-48 w-full lg:h-60 bg-white" role="img" aria-label="Slideshow of perfumes from the Ireme Luxury collection">
+              <img src="images/perfumes/1-million.webp" alt="" loading="eager" class="is-active" />
+              <img src="images/perfumes/ambre-edt.webp" alt="" loading="lazy" />
+              <img src="images/perfumes/ambre-gift-set.webp" alt="" loading="lazy" />
+          </div>
+        </figure>
       </div>
     </section>
 
-    <section class="mx-auto max-w-7xl px-6 py-12 lg:px-10 lg:py-16" aria-label="Perfume catalog">
+    <section class="mx-auto max-w-7xl px-6 pt-8 pb-12 lg:px-10 lg:pb-16" aria-label="Perfume catalog">
 
       <!-- Toolbar -->
       <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -202,5 +210,17 @@
 
   <script src="js/products.js?v=20260718c"></script>
   <script src="js/catalog.js?v=20260718c"></script>
+  <script>
+    (function () {
+      var slides = document.querySelectorAll('#hero-slideshow img');
+      if (slides.length < 2) return;
+      var current = 0;
+      setInterval(function () {
+        slides[current].classList.remove('is-active');
+        current = (current + 1) % slides.length;
+        slides[current].classList.add('is-active');
+      }, 5000);
+    })();
+  </script>
 </body>
 </html>

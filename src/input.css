@@ -79,3 +79,10 @@
   opacity: 1;
   transform: scale(1) translateX(0);
 }
+
+/* Light variant for product shots on white backgrounds (perfumes):
+   show the whole bottle instead of cropping it. */
+.hero-slideshow--light img {
+  object-fit: contain;
+  padding: 1.5rem;
+}
