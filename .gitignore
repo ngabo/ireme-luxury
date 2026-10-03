@@ -2,3 +2,6 @@ node_modules/
 
 # Supplier catalog PDFs — contain wholesale cost prices, keep out of the repo
 *.pdf
+
+# Private marketing notes — not published on the site
+marketing/

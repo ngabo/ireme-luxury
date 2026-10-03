@@ -42,8 +42,11 @@
     max: HI,
   };
   if (state.q) searchInput.value = state.q;
+  const urlBrand = params.get('brand');
 
   const rwf = (n) => 'RWF ' + n.toLocaleString('en-US');
+  // Must match slug() in tools/build_product_pages.py
+  const productUrl = (p) => 'p/' + (p.brand + '-' + p.ref).toLowerCase().replace(/[^a-z0-9.]+/g, '-').replace(/^-+|-+$/g, '') + '.html';
   const byRef = (ref) => items.find((p) => p.ref === ref);
 
   const BADGE_SVG =
@@ -69,7 +72,7 @@
       '<button type="button" data-wish="' + p.ref + '" aria-pressed="' + !!wished + '" aria-label="' + (wished ? 'Remove from' : 'Save to') + ' wishlist" ' +
       'class="absolute right-2 top-2 z-10 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-colors duration-200 hover:text-gold-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold ' +
       (wished ? 'text-gold' : 'text-text/70') + '">' + heartSVG(wished) + '</button>' +
-      '<a href="#" data-ref="' + p.ref + '" aria-haspopup="dialog" class="block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-gold">' +
+      '<a href="' + productUrl(p) + '" data-ref="' + p.ref + '" aria-haspopup="dialog" class="block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-gold">' +
       '<div class="overflow-hidden bg-white px-4 pb-2 pt-8 sm:px-6 sm:pt-10">' +
       '<img src="' + p.img.src + '" alt="' + p.img.alt + '" width="600" height="600" loading="lazy" ' +
       'class="aspect-square w-full object-contain transition-transform duration-300 ease-out group-hover:scale-105" />' +
@@ -78,7 +81,7 @@
       '<div class="flex flex-1 flex-col px-3 pb-4 pt-3 sm:px-5 sm:pb-5">' +
       '<p class="flex items-center gap-1.5 text-[0.6875rem] text-muted sm:text-xs">' + '<span class="text-gold">' + BADGE_SVG + '</span>Authenticity Guaranteed</p>' +
       (p.brand ? '<p class="mt-3 text-[0.625rem] font-medium uppercase tracking-luxe text-gold-dark sm:text-[0.6875rem]">' + p.brand + '</p>' : '') +
-      '<h3 class="mt-1 text-sm leading-snug text-text sm:text-base"><a href="#" data-ref="' + p.ref + '" aria-haspopup="dialog" class="transition-colors duration-200 hover:text-gold-dark">' + heading + '</a></h3>' +
+      '<h3 class="mt-1 text-sm leading-snug text-text sm:text-base"><a href="' + productUrl(p) + '" data-ref="' + p.ref + '" aria-haspopup="dialog" class="transition-colors duration-200 hover:text-gold-dark">' + heading + '</a></h3>' +
       (p.name ? '<p class="mt-0.5 text-xs text-muted">' + p.ref + '</p>' : '') +
       (p.desc ? '<p class="mt-1.5 line-clamp-2 text-xs leading-relaxed text-muted">' + p.desc + '</p>' : '') +
       '<p class="mt-3 text-base font-medium tracking-wide text-text sm:text-lg">' + (p.price ? rwf(p.price) : '<span class="text-sm font-normal text-muted">Price on request</span>') + '</p>' +
@@ -184,6 +187,7 @@
         ? '<p class="mt-4 text-xl font-medium tracking-wide">' + rwf(p.price) + '</p>'
         : '<p class="mt-4 text-sm text-muted">Contact us for the current price and availability.</p>') +
       '<button type="button" data-add="' + p.ref + '" class="btn-cart mt-6 sm:max-w-xs">' + BAG_SVG + '<span>Add to cart</span></button>' +
+      '<a href="' + productUrl(p) + '" class="mt-3 text-xs uppercase tracking-wide2 text-muted underline underline-offset-4 hover:text-text">View full details</a>' +
       '<div class="my-7 h-px bg-line" aria-hidden="true"></div>' +
       '<h3 class="text-[0.6875rem] font-medium uppercase tracking-luxe text-gold-dark">' + (info.heading || 'Made for') + '</h3>' +
       '<p class="mt-3 text-sm leading-relaxed text-muted">' + info.madeFor + '</p>' +
@@ -262,6 +266,10 @@
   // ---------- Brand filters (pills + sidebar checkboxes share one state) ----------
   const brandCounts = items.reduce((m, p) => { if (p.brand) m[p.brand] = (m[p.brand] || 0) + 1; return m; }, {});
   const brands = Object.keys(brandCounts);
+  if (urlBrand) {
+    const match = brands.find((b) => b.toLowerCase() === urlBrand.toLowerCase());
+    if (match) state.brands.add(match);
+  }
 
   function renderBrandFilters() {
     if (brandPills) {
